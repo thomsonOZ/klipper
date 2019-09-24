@@ -8,6 +8,9 @@ All dates in this document are approximate.
 
 ## Changes
 
+20210801: The PE0/PE1 analog only pseudo-pins on the atmega168 and
+atmega328 have been renamed to PE2/PE3.
+
 20210720: A controller_fan section now monitors all stepper motors by
 default (not just the kinematic stepper motors).  If the previous
 behavior is desired, see the `stepper` config option in the
