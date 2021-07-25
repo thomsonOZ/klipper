@@ -153,6 +153,16 @@ class DataLogger:
                                "method": "motion_report/dump_stepper",
                                "params": { "name": stepper,
                                            "response_template": {"q": qname}}})
+        config = status["configfile"]["settings"]
+        for cfgname in config.keys():
+            if cfgname.startswith("angle "):
+                aname = cfgname.split()[1]
+                qname = "angle:" + aname
+                self.query_handlers[qname] = self.handle_dump
+                self.send_msg({"id": qname,
+                               "method": "angle/dump_angle",
+                               "params": { "sensor": aname,
+                                           "response_template": {"q": qname}}})
     def handle_dump(self, msg, raw_msg):
         msg_id = msg["id"]
         self.db.setdefault("subscriptions", {})[msg_id] = msg["result"]

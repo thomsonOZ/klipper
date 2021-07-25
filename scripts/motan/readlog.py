@@ -183,6 +183,43 @@ class HandleStepQ:
                 step_data.append((step_time, step_pos - .5*qs_dist, step_pos))
 LogHandlers["stepq"] = HandleStepQ
 
+# Extract positions from magnetic angle sensor
+class HandleAngle:
+    ParametersMsgId = 2
+    ParametersTotal = 2
+    def __init__(self, lmanager, msg_id):
+        self.msg_id = msg_id
+        self.jdispatch = lmanager.get_jdispatch()
+        self.next_angle_time = self.last_angle_time = 0.
+        self.next_angle = self.last_angle = 0.
+        self.cur_data = []
+        self.data_pos = 0
+        self.angle_dist = -40. / 65536 # XXX
+    def get_description(self, name_parts):
+        return {'label': '%s position' % (name_parts[1],),
+                'units': 'Position\n(mm)', 'func': self.pull_position}
+    def pull_position(self, req_time):
+        while 1:
+            if req_time <= self.next_angle_time:
+                pdiff = self.next_angle - self.last_angle
+                tdiff = self.next_angle_time - self.last_angle_time
+                rtdiff = req_time - self.last_angle_time
+                po = rtdiff * pdiff / tdiff
+                return (self.last_angle + po) * self.angle_dist
+            if self.data_pos >= len(self.cur_data):
+                # Read next data block
+                jmsg = self.jdispatch.pull_msg(req_time, self.msg_id)
+                if jmsg is None:
+                    return self.next_angle * self.angle_dist
+                self.cur_data = jmsg['data']
+                self.data_pos = 0
+                continue
+            self.last_angle = self.next_angle
+            self.last_angle_time = self.next_angle_time
+            self.next_angle_time, self.next_angle = self.cur_data[self.data_pos]
+            self.data_pos += 1
+LogHandlers["angle"] = HandleAngle
+
 
 ######################################################################
 # Log reading
