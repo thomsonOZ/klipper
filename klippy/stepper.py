@@ -116,8 +116,7 @@ class MCU_stepper:
         clock = self._mcu.print_time_to_clock(print_time)
         ffi_main, ffi_lib = chelper.get_ffi()
         return ffi_lib.stepcompress_find_past_position(self._stepqueue, clock)
-    def get_past_commanded_position(self, print_time):
-        mcu_pos = self.get_past_mcu_position(print_time)
+    def mcu_to_commanded_position(self, mcu_pos):
         return mcu_pos * self._step_dist - self._mcu_position_offset
     def dump_steps(self, count, start_clock, end_clock):
         ffi_main, ffi_lib = chelper.get_ffi()
