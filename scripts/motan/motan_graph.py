@@ -84,7 +84,8 @@ def main():
     graphs = [
         [('trapq:toolhead:velocity', {'color': 'green'})],
         [('trapq:toolhead:accel', {'color': 'green'})],
-        [('deviation:stepq:stepper_x-kin:stepper_x', {'color': 'blue'})]
+        #[('deviation:stepq:stepper_x-kin:stepper_x', {'color': 'blue'})]
+        [('deviation:angle:angle_x-kin:stepper_x', {'color': 'red'})]
     ]
     if options.graph is not None:
         graphs = ast.literal_eval(options.graph)
